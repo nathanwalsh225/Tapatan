@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Tapatan</string>
+    <string name="helpObjectives">To be the first player to get 3 in a row (like in tic tac toe). A row can be made horizontally, vertically or diagonally.</string>
+    <string name="movePhase">Once all counters are on the board, players take turns moving their  counters from one point at a time in an attempt to get 3 in a row.\nNo jumping is allowed.\nCounters can only move to adjacent, empty points.\nThe first player to move his counters into a row of 3 is the winner.</string>
+    <string name="tip">If the same 3 moves are repeated at least twice, a stalemate has been achieved and there is no winner.</string>
+    <string name="rules"><![CDATA[There are two phases to game play. In the \"drop phase\" players place  their pieces on the board. In the move phase, players move their pieces  in an attempt to get 3 in a row.]]></string>
+    <string name="dropPhase"><![CDATA[Players take turns placing their counters on the board on a point until  all counters have been placed. This is what you see in the 4 part photo, above.]]></string>
+</resources>
