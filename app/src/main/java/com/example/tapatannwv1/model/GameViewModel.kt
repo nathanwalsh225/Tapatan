@@ -40,7 +40,11 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         row: Int,
         col: Int
     ) {
-        if (board[row][col] == null) {
+
+
+        val previousRow: Int = 0
+        val previousCol: Int = 0
+        if (board[row][col] == null && isValidMove(row, col)) {
 
             board[row][col] =
                 if (currentPlayer.value == player1Name.value) R.drawable.player1_image else R.drawable.player2_image
@@ -59,6 +63,15 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     }
 
 
+    //Function to make sure its placed in an adjacent cell to the
+    private fun isValidMove(row: Int, col: Int): Boolean {
+//        if(board[row - 1][col - 1] != null) {
+//            return false
+//        }
+
+        return true
+    }
+
     private fun checkWin(): Boolean {
         val flatBoard = board.flatten() //flatting the board to check it easier
 
@@ -75,6 +88,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
         val currentPlayerPiece = if (currentPlayer.value == player1Name.value) R.drawable.player1_image else R.drawable.player2_image
 
+        //TODO
         ///ADDITIONAL FEATURE
         ///HIGHLIGHT WINNING SECTION?
 
