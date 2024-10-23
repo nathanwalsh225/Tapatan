@@ -1,9 +1,7 @@
 package com.example.tapatannwv1.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -48,6 +47,8 @@ fun GameScreen(
     if (gameViewModel.player1Name.value == "Player 1") {
         gameViewModel.setPlayerNames(player1Name, player2Name)
     }
+
+    val gameWinner = gameViewModel.winningPlayer.value
 
     Column(
         modifier = Modifier
@@ -95,13 +96,44 @@ fun GameScreen(
     }
     //END OF NAV
 
-
     Column(
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        //Winning/Player Text
+        Column(modifier = Modifier.rotate(180f)) {
+            if (gameWinner != null) {
+                if (gameWinner == player2Name) {
+                    Text(
+                        text = "You Win!",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+
+                } else {
+                    Text(
+                        text = "You Lose!",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
+
+                Text(
+                    text = "$gameWinner Wins!",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+            } else {
+                Text(
+                    text = "${gameViewModel.currentPlayer.value}'s turn",
+                    style = MaterialTheme.typography.headlineLarge
+                )
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         Box(
             modifier = Modifier
@@ -114,7 +146,8 @@ fun GameScreen(
                 painter = painterResource(id = R.drawable.tapatanboard),
                 contentDescription = "Tapatan Board",
                 modifier = Modifier
-                    .fillMaxSize().padding(12.dp)
+                    .fillMaxSize()
+                    .padding(12.dp)
             )
 
             // Overlay 3x3 Cells on Top of Board
@@ -154,18 +187,44 @@ fun GameScreen(
                 }
             }
         }
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
 
-        Text(
-            text = "${gameViewModel.currentPlayer.value}'s turn",
-            style = MaterialTheme.typography.headlineLarge
-        )
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = { gameViewModel.resetGame() }
+        //Winning/Player Text
+        Column(modifier = Modifier.padding(16.dp)) {
+            if (gameWinner != null) {
+                if (gameWinner == player1Name) {
+                    Text(
+                        text = "You Win!",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                } else {
+                    Text(
+                        text = "You Lose!",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
+
+                Text(
+                    text = "$gameWinner Wins!",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+            } else {
+                Text(
+                    text = "${gameViewModel.currentPlayer.value}'s turn",
+                    style = MaterialTheme.typography.headlineLarge
+                )
+            }
+        }
+
+
+        Button(
+            onClick = { gameViewModel.resetGame() },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
         ) {
-            Text(text = "New Game")
+            Text(text = "Reset Game")
         }
 
     }
