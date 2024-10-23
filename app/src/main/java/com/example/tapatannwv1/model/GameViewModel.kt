@@ -13,9 +13,10 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     val player1Name = mutableStateOf(savedStateHandle.get<String>("player1Name") ?: "Player 1")
     val player2Name = mutableStateOf(savedStateHandle.get<String>("player2Name") ?: "Player 2")
-    val currentPlayer = mutableStateOf(player1Name.value)
 
+    val currentPlayer = mutableStateOf(player1Name.value)
     val winningPlayer = mutableStateOf<String?>(null)
+    val stalemate = mutableStateOf<Boolean?>(false)
 
 
     fun setPlayerNames(name1: String, name2: String) {
@@ -45,9 +46,11 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
                 if (currentPlayer.value == player1Name.value) R.drawable.player1_image else R.drawable.player2_image
 
             if(checkWin()){
-
                 winningPlayer.value = currentPlayer.value
                 Log.d("GameViewModel", "Winner detected: ${winningPlayer.value}")
+            } else if(checkStalemate()) {
+                Log.d("GameViewModel", "Stalemate detected")
+
             } else {
                 swapPlayers()
             }
@@ -83,6 +86,16 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         return false //No winner, game continues
     }
 
+    private fun checkStalemate(): Boolean {
+        val flatBoard = board.flatten() //flatting the board to check it easier same way as above
+
+        if (flatBoard.all { it != null }) {
+            stalemate.value = true
+            return true
+        } else
+            return false
+    }
+
 
     private fun swapPlayers() {
         currentPlayer.value =
@@ -96,6 +109,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
             }
         }
         winningPlayer.value = null
+        stalemate.value = false
         currentPlayer.value = player1Name.value
     }
 

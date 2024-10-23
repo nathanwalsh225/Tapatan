@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tapatannwv1.R
+import com.example.tapatannwv1.model.GameViewModel
 import com.example.tapatannwv1.model.SettingsViewModel
 
 @Composable
@@ -45,7 +46,7 @@ fun SettingsScreen(
     onHelpClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onApplyClicked: (String, String) -> Unit,
-    settingsViewModel: SettingsViewModel = viewModel()
+    gameViewModel: GameViewModel = viewModel(),
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -128,8 +129,8 @@ fun SettingsScreen(
                         )
 
                         TextField(
-                            value = settingsViewModel.player1Name.value,
-                            onValueChange = { settingsViewModel.player1Name.value = it },
+                            value = gameViewModel.player1Name.value,
+                            onValueChange = { gameViewModel.player1Name.value = it },
                             label = { Text("Player 1 Name") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -144,8 +145,8 @@ fun SettingsScreen(
                             modifier = Modifier.size(50.dp)
                         )
                         TextField(
-                            value = settingsViewModel.player2Name.value,
-                            onValueChange = { settingsViewModel.player2Name.value = it },
+                            value = gameViewModel.player2Name.value,
+                            onValueChange = { gameViewModel.player2Name.value = it },
                             label = { Text("Player 2 Name") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -157,13 +158,9 @@ fun SettingsScreen(
         //Button has been taken outside the Column element
         Button(
             onClick = {
-
-                val player1 = settingsViewModel.player1Name.value.ifBlank { "Player 1" }
-                val player2 = settingsViewModel.player2Name.value.ifBlank { "Player 2" }
-
-                settingsViewModel.updatePlayerName(1, player1)
-                settingsViewModel.updatePlayerName(2, player2)
-
+                val player1 = gameViewModel.player1Name.value.ifBlank { "Player 1" }
+                val player2 = gameViewModel.player2Name.value.ifBlank { "Player 2" }
+                //gameViewModel.setPlayerNames(player1, player2)
 
                 onApplyClicked(player1, player2)
             },

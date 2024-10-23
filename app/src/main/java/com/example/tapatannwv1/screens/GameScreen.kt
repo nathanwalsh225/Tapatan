@@ -103,32 +103,40 @@ fun GameScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        //Winning/Player Text
-        Column(modifier = Modifier.rotate(180f)) {
-            if (gameWinner != null) {
-                if (gameWinner == player2Name) {
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .rotate(180f)
+        ) {
+            when {
+                gameViewModel.stalemate.value == true -> {
                     Text(
-                        text = "You Win!",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-
-                } else {
-                    Text(
-                        text = "You Lose!",
+                        text = "Draw!",
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
-
-                Text(
-                    text = "$gameWinner Wins!",
-                    style = MaterialTheme.typography.headlineSmall
-                )
-
-            } else {
-                Text(
-                    text = "${gameViewModel.currentPlayer.value}'s turn",
-                    style = MaterialTheme.typography.headlineLarge
-                )
+                gameWinner != null -> {
+                    if (gameWinner == player1Name) {
+                        Text(
+                            text = "You Win!",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    } else {
+                        Text(
+                            text = "You Lose!",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    }
+                    Text(
+                        text = "$gameWinner Wins!",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+                else -> {
+                    Text(
+                        text = "${gameViewModel.currentPlayer.value}'s turn",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
             }
         }
 
@@ -190,31 +198,37 @@ fun GameScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        //Winning/Player Text
         Column(modifier = Modifier.padding(16.dp)) {
-            if (gameWinner != null) {
-                if (gameWinner == player1Name) {
+            when {
+                gameViewModel.stalemate.value == true -> {
                     Text(
-                        text = "You Win!",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-                } else {
-                    Text(
-                        text = "You Lose!",
+                        text = "Draw!",
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
-
-                Text(
-                    text = "$gameWinner Wins!",
-                    style = MaterialTheme.typography.headlineSmall
-                )
-
-            } else {
-                Text(
-                    text = "${gameViewModel.currentPlayer.value}'s turn",
-                    style = MaterialTheme.typography.headlineLarge
-                )
+                gameWinner != null -> {
+                    if (gameWinner == player1Name) {
+                        Text(
+                            text = "You Win!",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    } else {
+                        Text(
+                            text = "You Lose!",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    }
+                    Text(
+                        text = "$gameWinner Wins!",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+                else -> {
+                    Text(
+                        text = "${gameViewModel.currentPlayer.value}'s turn",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
             }
         }
 
