@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,13 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tapatannwv1.R
 import com.example.tapatannwv1.model.GameViewModel
@@ -50,6 +47,7 @@ fun GameScreen(
 ) {
 
     val gameWinner = gameViewModel.winningPlayer.value?.name
+    val focusManager = LocalFocusManager.current
 
     BoxWithConstraints(
         modifier = Modifier
@@ -104,12 +102,14 @@ fun GameScreen(
         }
         //END OF NAV
 
+
         Column(
             modifier = Modifier
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.height(boxHeight * 0.05f))
 
             Column(
                 modifier = Modifier
@@ -120,7 +120,8 @@ fun GameScreen(
                     gameViewModel.stalemate.value == true -> {
                         Text(
                             text = "Draw!",
-                            style = MaterialTheme.typography.headlineLarge
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontSize = (boxWidth * 0.07f).value.sp
                         )
                     }
 
@@ -128,24 +129,29 @@ fun GameScreen(
                         if (gameWinner.value == player2Name) {
                             Text(
                                 text = "You Win!",
-                                style = MaterialTheme.typography.headlineLarge
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontSize = (boxWidth * 0.07f).value.sp
                             )
                         } else {
                             Text(
                                 text = "You Lose!",
-                                style = MaterialTheme.typography.headlineLarge
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontSize = (boxWidth * 0.07f).value.sp
                             )
                         }
                         Text(
                             text = "${gameWinner.value} Wins!",
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontSize = (boxWidth * 0.07f).value.sp
                         )
                     }
 
                     else -> {
                         Text(
                             text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
-                            style = MaterialTheme.typography.headlineLarge
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontSize = (boxWidth * 0.07f).value.sp
+
                         )
                     }
                 }
@@ -158,7 +164,7 @@ fun GameScreen(
                     painter = painterResource(id = gameViewModel.player2.pieceImage.value),
                     contentDescription = "Player 2 Piece",
                     modifier = Modifier
-                        .scale(0.8f)
+                        .size(boxWidth * 0.2f)
                         .padding(12.dp)
                 )
 
@@ -166,7 +172,7 @@ fun GameScreen(
                     painter = painterResource(id = gameViewModel.player2.pieceImage.value),
                     contentDescription = "Player 2 Piece",
                     modifier = Modifier
-                        .scale(0.8f)
+                        .size(boxWidth * 0.2f)
                         .padding(12.dp)
                 )
 
@@ -174,12 +180,11 @@ fun GameScreen(
                     painter = painterResource(id = gameViewModel.player2.pieceImage.value),
                     contentDescription = "Player 2 Piece",
                     modifier = Modifier
-                        .scale(0.8f)
+                        .size(boxWidth * 0.2f)
                         .padding(12.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
 
             Box(
                 modifier = Modifier
@@ -192,7 +197,7 @@ fun GameScreen(
                     painter = painterResource(id = R.drawable.tapatanboard),
                     contentDescription = "Tapatan Board",
                     modifier = Modifier
-                        .fillMaxSize()
+                        .size(boxWidth * 1f)
                         .padding(12.dp)
                 )
 
@@ -211,8 +216,8 @@ fun GameScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(boxWidth * 0.15f)
-                                        .background(color = Color.LightGray) //Background for the boxes
                                         .clickable {
+                                            focusManager.clearFocus()
                                             gameViewModel.onCellClicked(row, col)
                                         },
                                     contentAlignment = Alignment.Center,
@@ -232,10 +237,6 @@ fun GameScreen(
                 }
             }
 
-
-
-            Spacer(modifier = Modifier.height(20.dp))
-
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -243,24 +244,24 @@ fun GameScreen(
                     painter = painterResource(id = gameViewModel.player1.pieceImage.value),
                     contentDescription = "Player 1 Piece",
                     modifier = Modifier
+                        .size(boxWidth * 0.2f)
                         .padding(12.dp)
-                        .scale(0.8f)
                 )
 
                 Image(
                     painter = painterResource(id = gameViewModel.player1.pieceImage.value),
                     contentDescription = "Player 1 Piece",
                     modifier = Modifier
+                        .size(boxWidth * 0.2f)
                         .padding(12.dp)
-                        .scale(0.8f)
                 )
 
                 Image(
                     painter = painterResource(id = gameViewModel.player1.pieceImage.value),
                     contentDescription = "Player 1 Piece",
                     modifier = Modifier
+                        .size(boxWidth * 0.2f)
                         .padding(12.dp)
-                        .scale(0.8f)
                 )
             }
 
@@ -269,7 +270,8 @@ fun GameScreen(
                     gameViewModel.stalemate.value == true -> {
                         Text(
                             text = "Draw!",
-                            style = MaterialTheme.typography.headlineLarge
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontSize = (boxWidth * 0.07f).value.sp
                         )
                     }
 
@@ -277,24 +279,28 @@ fun GameScreen(
                         if (gameWinner.value == player1Name) {
                             Text(
                                 text = "You Win!",
-                                style = MaterialTheme.typography.headlineLarge
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontSize = (boxWidth * 0.07f).value.sp
                             )
                         } else {
                             Text(
                                 text = "You Lose!",
-                                style = MaterialTheme.typography.headlineLarge
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontSize = (boxWidth * 0.07f).value.sp
                             )
                         }
                         Text(
                             text = "${gameWinner.value} Wins!",
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontSize = (boxWidth * 0.07f).value.sp
                         )
                     }
 
                     else -> {
                         Text(
                             text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
-                            style = MaterialTheme.typography.headlineLarge
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontSize = (boxWidth * 0.07f).value.sp
                         )
                     }
                 }
