@@ -14,20 +14,19 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     val availablePieces = listOf( //TODO gather actual images
         R.drawable.blackchecker,
         R.drawable.redchecker,
-        R.drawable.player1_image,
-        R.drawable.player2_image,
+        R.drawable.whitechecker,
     )
 
     val player1 = Player(
         1,
         savedStateHandle.get<String>("player1Name") ?: "Player 1",
-        savedStateHandle.get<Int>("player1Image") ?: availablePieces[0],
+        savedStateHandle.get<Int>("player1Image") ?: R.drawable.blackchecker,
     )
 
     val player2 = Player(
         2,
         savedStateHandle.get<String>("player2Name") ?: "Player 2",
-        savedStateHandle.get<Int>("player2Image") ?: availablePieces[1],
+        savedStateHandle.get<Int>("player2Image") ?: R.drawable.redchecker,
     )
 
     val currentPlayer = mutableStateOf(player1)
@@ -52,12 +51,8 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     fun setPlayerImage(image1: Int, image2: Int) {
         player1.pieceImage.value = availablePieces[image1]
         player2.pieceImage.value = availablePieces[image2]
-
-        // Ensure state is saved for each change
-        savedStateHandle["player1Image"] = player1.pieceImage.value
-        savedStateHandle["player2Image"] = player2.pieceImage.value
-
-        Log.d("GameViewModel", "(OnSet) Player 1 image.value : ${player1.pieceImage.value}")
+        savedStateHandle["player1Image"] = availablePieces[image1]
+        savedStateHandle["player2Image"] = availablePieces[image2]
     }
 
     fun onCellClicked( //There is some issue possibly here with the logic to swap player names if left default
@@ -69,14 +64,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
             if (board[row][col] == null) {
 
 
-                Log.d("GameViewModel", "(SHOULD BE) Player 1 image.value : ${availablePieces[0]}")
-                Log.d("GameViewModel", "Player 1 image.value : ${player1.pieceImage.value}")
-
-
-
-
-
-                board[row][col] = if (currentPlayer.value.name.value == player1.name.value) player1.pieceImage.value else player2.pieceImage.value
+                board[row][col] = if (currentPlayer.component1().id == player1.id) player1.pieceImage.value else player2.pieceImage.value
                 piecesPlaced++
 
                 if (checkWin()) {
@@ -126,8 +114,8 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     private fun isCurrentPlayerPiece(row: Int, col: Int): Boolean {
         // Check to see if the selected cell has the current players piece
-        val currentPlayerPiece = currentPlayer.value.pieceImage.value
-        return board[row][col] == currentPlayerPiece
+        val currentPlayerPiece = currentPlayer.value.pieceImage
+        return board[row][col] == currentPlayerPiece.value
     }
 
     private fun isValidMove(
@@ -194,8 +182,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
 
     private fun swapPlayers() {
-        currentPlayer.value =
-            if (currentPlayer.value == player1) player2 else player1
+        currentPlayer.value = if (currentPlayer.value == player1) player2 else player1
     }
 
     fun resetGame() {

@@ -1,6 +1,5 @@
 package com.example.tapatannwv1.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,230 +43,266 @@ fun GameScreen(
     gameViewModel: GameViewModel = viewModel()
 ) {
     val gameWinner = gameViewModel.winningPlayer.value?.name
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 32.dp),
-        verticalArrangement = Arrangement.Top
+            .padding(bottom = 32.dp, top = 12.dp)
     ) {
-        //'Nav' bar
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = colorResource(id = R.color.secondaryColor)),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-
-            ) {
-            IconButton(onClick = onBackClicked) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    modifier = Modifier
-                        .size(50.dp),
-                    tint = colorResource(id = R.color.tertiaryColor)
-                )
-            }
-
-            Image(
-                painter = painterResource(id = R.drawable.tapatanlogo),
-                contentDescription = "Tapatan Logo",
-                modifier = Modifier
-                    .size(50.dp)
-            )
-
-            IconButton(
-                onClick = onHelpClicked,
-                modifier = Modifier.size(50.dp)
-            ) {
-                Icon(
-                    Icons.Default.Help,
-                    contentDescription = "Help",
-                    tint = colorResource(id = R.color.tertiaryColor)
-                )
-            }
-        }
-    }
-    //END OF NAV
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .rotate(180f)
+                .fillMaxSize()
+                .padding(top = 32.dp),
+            verticalArrangement = Arrangement.Top
         ) {
-            when {
-                gameViewModel.stalemate.value == true -> {
-                    Text(
-                        text = "Draw!",
-                        style = MaterialTheme.typography.headlineLarge
+            //'Nav' bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = colorResource(id = R.color.secondaryColor)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+
+                ) {
+                IconButton(onClick = onBackClicked) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier
+                            .size(50.dp),
+                        tint = colorResource(id = R.color.tertiaryColor)
                     )
                 }
-                gameWinner != null -> {
-                    if (gameWinner.value == player2Name) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.tapatanlogo),
+                    contentDescription = "Tapatan Logo",
+                    modifier = Modifier
+                        .size(50.dp)
+                )
+
+                IconButton(
+                    onClick = onHelpClicked,
+                    modifier = Modifier.size(50.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Help,
+                        contentDescription = "Help",
+                        tint = colorResource(id = R.color.tertiaryColor)
+                    )
+                }
+            }
+        }
+        //END OF NAV
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .rotate(180f)
+            ) {
+                when {
+                    gameViewModel.stalemate.value == true -> {
                         Text(
-                            text = "You Win!",
-                            style = MaterialTheme.typography.headlineLarge
-                        )
-                    } else {
-                        Text(
-                            text = "You Lose!",
+                            text = "Draw!",
                             style = MaterialTheme.typography.headlineLarge
                         )
                     }
-                    Text(
-                        text = "${gameWinner.value} Wins!",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-                else -> {
-                    Text(
-                        text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
+
+                    gameWinner != null -> {
+                        if (gameWinner.value == player2Name) {
+                            Text(
+                                text = "You Win!",
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                        } else {
+                            Text(
+                                text = "You Lose!",
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                        }
+                        Text(
+                            text = "${gameWinner.value} Wins!",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+
+                    else -> {
+                        Text(
+                            text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    }
                 }
             }
-        }
 
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-
-
-        Box(
-            modifier = Modifier
-                .size(400.dp) // Adjust size of the board
-                .padding(16.dp)
-        ) {
-
-            // Background Image of Tapatan Board
-            Image(
-                painter = painterResource(id = R.drawable.tapatanboard),
-                contentDescription = "Tapatan Board",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-            )
-
-            // Overlay 3x3 Cells on Top of Board
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                for (row in 0 until 3) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(), //Border for the boxes too see easier
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        for (col in 0 until 3) {
-                            Box(
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .background(color = Color.LightGray) //Background for the boxes
-                                    .clickable {
+                Image(
+                    painter = painterResource(id = gameViewModel.player2.pieceImage.value),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
 
-                                        Log.d("GameViewModel", "(GameSCreen) Player 1 value : ${gameViewModel.player1.name.value}")
-                                        Log.d("GameViewModel", "(GameSCreen) Player 1 image.value : ${gameViewModel.player1.pieceImage.value}")
-                                        gameViewModel.onCellClicked(row, col)
-                                    },
-                                contentAlignment = Alignment.Center,
+                Image(
+                    painter = painterResource(id = gameViewModel.player2.pieceImage.value),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
 
-                                ) {
-                                val cellValue = gameViewModel.board[row][col]
-                                if (cellValue != null) {
-                                    Image(
-                                        painter = painterResource(id = cellValue),
-                                        contentDescription = null
-                                    )
+                Image(
+                    painter = painterResource(id = gameViewModel.player2.pieceImage.value),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
+            }
+
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+
+
+
+            Box(
+                modifier = Modifier
+                    .size(400.dp) // Adjust size of the board
+                    .padding(16.dp)
+            ) {
+
+                // Background Image of Tapatan Board
+                Image(
+                    painter = painterResource(id = R.drawable.tapatanboard),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
+                )
+
+                // Overlay 3x3 Cells on Top of Board
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    for (row in 0 until 3) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(), //Border for the boxes too see easier
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            for (col in 0 until 3) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .background(color = Color.LightGray) //Background for the boxes
+                                        .clickable {
+                                            gameViewModel.onCellClicked(row, col)
+                                        },
+                                    contentAlignment = Alignment.Center,
+
+                                    ) {
+                                    val cellValue = gameViewModel.board[row][col]
+                                    if (cellValue != null) {
+                                        Image(
+                                            painter = painterResource(id = cellValue),
+                                            contentDescription = null
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
 
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Image(
-                painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                contentDescription = "Tapatan Board",
-                modifier = Modifier
-                    .padding(12.dp)
-            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Image(
+                    painter = painterResource(id = gameViewModel.player1.pieceImage.value),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
 
-            Image(
-                painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                contentDescription = "Tapatan Board",
-                modifier = Modifier
-                    .padding(12.dp)
-            )
+                Image(
+                    painter = painterResource(id = gameViewModel.player1.pieceImage.value),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
 
-            Image(
-                painter = painterResource(id =  gameViewModel.player1.pieceImage.value),
-                contentDescription = "Tapatan Board",
-                modifier = Modifier
-                    .padding(12.dp)
-            )
-        }
+                Image(
+                    painter = painterResource(id = gameViewModel.player1.pieceImage.value),
+                    contentDescription = "Tapatan Board",
+                    modifier = Modifier
+                        .padding(12.dp)
+                )
+            }
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            when {
-                gameViewModel.stalemate.value == true -> {
-                    Text(
-                        text = "Draw!",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-                }
-                gameWinner != null -> {
-                    if (gameWinner.value == player1Name) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                when {
+                    gameViewModel.stalemate.value == true -> {
                         Text(
-                            text = "You Win!",
-                            style = MaterialTheme.typography.headlineLarge
-                        )
-                    } else {
-                        Text(
-                            text = "You Lose!",
+                            text = "Draw!",
                             style = MaterialTheme.typography.headlineLarge
                         )
                     }
-                    Text(
-                        text = "${gameWinner.value} Wins!",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
-                else -> {
-                    Text(
-                        text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
+
+                    gameWinner != null -> {
+                        if (gameWinner.value == player1Name) {
+                            Text(
+                                text = "You Win!",
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                        } else {
+                            Text(
+                                text = "You Lose!",
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                        }
+                        Text(
+                            text = "${gameWinner.value} Wins!",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+
+                    else -> {
+                        Text(
+                            text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    }
                 }
             }
-        }
 
+
+        }
 
         Button(
             onClick = { gameViewModel.resetGame() },
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(0.9f),
+            shape = MaterialTheme.shapes.medium
         ) {
             Text(text = "Reset Game")
         }
+
 
     }
 }

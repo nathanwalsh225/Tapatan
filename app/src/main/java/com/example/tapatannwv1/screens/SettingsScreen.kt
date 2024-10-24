@@ -1,6 +1,5 @@
 package com.example.tapatannwv1.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,9 +29,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tapatannwv1.R
 import com.example.tapatannwv1.model.GameViewModel
-import com.example.tapatannwv1.model.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
@@ -55,8 +52,8 @@ fun SettingsScreen(
     gameViewModel: GameViewModel = viewModel(),
 ) {
     val focusManager = LocalFocusManager.current
-    val player1Piece = remember { mutableStateOf(0) }
-    val player2Piece = remember { mutableStateOf(0) }
+    val player1Piece = remember { mutableIntStateOf(0) }
+    val player2Piece = remember { mutableIntStateOf(1) }
 
 
 
@@ -233,16 +230,15 @@ fun SettingsScreen(
         //Button has been taken outside the Column element
         Button(
             onClick = {
-                val player1 = gameViewModel.player1.name.value.ifBlank { "Player 1" }
-                val player2 = gameViewModel.player2.name.value.ifBlank { "Player 2" }
-                val image1 = player1Piece.value
-                val image2 = player2Piece.value
-                //gameViewModel.setPlayerNames(player1, player2)
-                gameViewModel.setPlayerNames(player1, player2)
+                val player1Name = gameViewModel.player1.name.value
+                val player2Name = gameViewModel.player2.name.value
+                val image1 = player1Piece.intValue //value only?
+                val image2 = player2Piece.intValue
+
+                gameViewModel.setPlayerNames(player1Name, player2Name)
                 gameViewModel.setPlayerImage(image1, image2)
 
-                Log.d("SettingsScreen", "(SettingsScreen) $image1 + $image2")
-                onApplyClicked(player1, player2, image1, image2)
+                onApplyClicked(player1Name, player2Name, image1, image2)
             },
             modifier = Modifier
                 .fillMaxWidth(0.9f)

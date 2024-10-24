@@ -1,7 +1,6 @@
 package com.example.tapatannwv1
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -52,7 +50,10 @@ fun TapatanApp(
 
             composable("home") {
                 HomeScreen(
-                    onStartNewMatch = { navController.navigate("game") },
+                    onStartNewMatch = {
+                        gameViewModel.resetGame()
+                        navController.navigate("game")
+                                      },
                     onSettingsClicked = { navController.navigate("settings") },
                     onHelpClicked = { navController.navigate("help") }
                 )
@@ -63,7 +64,8 @@ fun TapatanApp(
                     player1Name = gameViewModel.player1.name.value,
                     player2Name = gameViewModel.player2.name.value,
                     onBackClicked = { navController.popBackStack() },
-                    onHelpClicked = { navController.navigate("help") }
+                    onHelpClicked = { navController.navigate("help")},
+                    gameViewModel = gameViewModel
                 )
             }
 
