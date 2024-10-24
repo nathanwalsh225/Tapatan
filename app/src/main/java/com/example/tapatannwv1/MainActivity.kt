@@ -59,9 +59,11 @@ fun TapatanApp(
             }
 
             composable("game") {
+
+                Log.d("MainActivity", "TapatanApp:${gameViewModel.player1.name}").toString()
                 GameScreen(
-                    player1Name = gameViewModel.player1Name.value,
-                    player2Name = gameViewModel.player2Name.value,
+                    player1Name = gameViewModel.player1.name.value,
+                    player2Name = gameViewModel.player2.name.value,
                     onBackClicked = { navController.popBackStack() },
                     onHelpClicked = { navController.navigate("help") }
                 )

@@ -44,11 +44,10 @@ fun GameScreen(
 ) {
 
     //Check to update the name if its not the default
-    if (gameViewModel.player1Name.value == "Player 1") {
+    if (gameViewModel.player1.name.value == "Player 1") {
         gameViewModel.setPlayerNames(player1Name, player2Name)
     }
-
-    val gameWinner = gameViewModel.winningPlayer.value
+    val gameWinner = gameViewModel.winningPlayer.value?.name
 
     Column(
         modifier = Modifier
@@ -115,7 +114,7 @@ fun GameScreen(
                     )
                 }
                 gameWinner != null -> {
-                    if (gameWinner == player1Name) {
+                    if (gameWinner.value == player2Name) {
                         Text(
                             text = "You Win!",
                             style = MaterialTheme.typography.headlineLarge
@@ -127,13 +126,13 @@ fun GameScreen(
                         )
                     }
                     Text(
-                        text = "$gameWinner Wins!",
+                        text = "${gameWinner.value} Wins!",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 }
                 else -> {
                     Text(
-                        text = "${gameViewModel.currentPlayer.value}'s turn",
+                        text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
@@ -142,6 +141,9 @@ fun GameScreen(
 
 
         Spacer(modifier = Modifier.height(20.dp))
+
+
+
 
         Box(
             modifier = Modifier
@@ -196,7 +198,34 @@ fun GameScreen(
             }
         }
 
+
+
         Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.blackchecker),
+                contentDescription = "Tapatan Board",
+                modifier = Modifier
+                    .padding(12.dp)
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.blackchecker),
+                contentDescription = "Tapatan Board",
+                modifier = Modifier
+                    .padding(12.dp)
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.blackchecker),
+                contentDescription = "Tapatan Board",
+                modifier = Modifier
+                    .padding(12.dp)
+            )
+        }
 
         Column(modifier = Modifier.padding(16.dp)) {
             when {
@@ -207,7 +236,7 @@ fun GameScreen(
                     )
                 }
                 gameWinner != null -> {
-                    if (gameWinner == player1Name) {
+                    if (gameWinner.value == player1Name) {
                         Text(
                             text = "You Win!",
                             style = MaterialTheme.typography.headlineLarge
@@ -219,13 +248,13 @@ fun GameScreen(
                         )
                     }
                     Text(
-                        text = "$gameWinner Wins!",
+                        text = "${gameWinner.value} Wins!",
                         style = MaterialTheme.typography.headlineSmall
                     )
                 }
                 else -> {
                     Text(
-                        text = "${gameViewModel.currentPlayer.value}'s turn",
+                        text = "${gameViewModel.currentPlayer.value.name.value}'s turn",
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }

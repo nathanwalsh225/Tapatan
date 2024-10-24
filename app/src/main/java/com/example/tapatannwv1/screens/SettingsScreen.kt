@@ -129,8 +129,8 @@ fun SettingsScreen(
                         )
 
                         TextField(
-                            value = gameViewModel.player1Name.value,
-                            onValueChange = { gameViewModel.player1Name.value = it },
+                            value = gameViewModel.player1.name.value,
+                            onValueChange = { gameViewModel.player1.name.value = it },
                             label = { Text("Player 1 Name") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -145,8 +145,8 @@ fun SettingsScreen(
                             modifier = Modifier.size(50.dp)
                         )
                         TextField(
-                            value = gameViewModel.player2Name.value,
-                            onValueChange = { gameViewModel.player2Name.value = it },
+                            value = gameViewModel.player2.name.value,
+                            onValueChange = { gameViewModel.player2.name.value = it },
                             label = { Text("Player 2 Name") },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -158,10 +158,12 @@ fun SettingsScreen(
         //Button has been taken outside the Column element
         Button(
             onClick = {
-                val player1 = gameViewModel.player1Name.value.ifBlank { "Player 1" }
-                val player2 = gameViewModel.player2Name.value.ifBlank { "Player 2" }
+                val player1 = gameViewModel.player1.name.value.ifBlank { "Player 1" }
+                val player2 = gameViewModel.player2.name.value.ifBlank { "Player 2" }
                 //gameViewModel.setPlayerNames(player1, player2)
+                Log.d("SettingsScreen", "Player 1: $player1, Player 2: $player2")
 
+                Log.d("SettingsScreen", "Player 1: ${gameViewModel.player1.name}, Player 2: ${gameViewModel.player2.name}")
                 onApplyClicked(player1, player2)
             },
             modifier = Modifier

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class SettingsViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+///TODO
     ///Very possibly unnecessary
 //    val player1Name = mutableStateOf(savedStateHandle.get<String>("player1Name") ?: "Player 1")
 //    val player2Name = mutableStateOf(savedStateHandle.get<String>("player2Name") ?: "Player 2")

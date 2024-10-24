@@ -11,21 +11,33 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     var board = List(3) { mutableStateListOf<Int?>(null, null, null) }
 
-    val player1Name = mutableStateOf(savedStateHandle.get<String>("player1Name") ?: "Player 1")
-    val player2Name = mutableStateOf(savedStateHandle.get<String>("player2Name") ?: "Player 2")
+    val player1 = Player(
+        1,
+        savedStateHandle.get<String>("player1Name") ?: "Player 1",
+        R.drawable.blackchecker
+    )
 
-    val currentPlayer = mutableStateOf(player1Name.value)
-    val winningPlayer = mutableStateOf<String?>(null)
+    val player2 = Player(
+        2,
+        savedStateHandle.get<String>("player2Name") ?: "Player 2",
+        R.drawable.redchecker
+    )
+
+    val currentPlayer = mutableStateOf(player1)
+    val winningPlayer = mutableStateOf<Player?>(null)
     val stalemate = mutableStateOf<Boolean?>(false)
 
+    private var piecesPlaced = 0
+    private val totalPieces = 6
+    private var selectedPiece: Pair<Int, Int>? = null
 
     fun setPlayerNames(name1: String, name2: String) {
-        player1Name.value = name1
-        player2Name.value = name2
+        player1.name.value = name1
+        player2.name.value = name2
         savedStateHandle["player1Name"] = name1
         savedStateHandle["player2Name"] = name2
 
-        currentPlayer.value = player1Name.value
+        currentPlayer.value = player1
     }
 
     fun setPlayerImage(player: Int, image: Int) {
@@ -40,36 +52,84 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         row: Int,
         col: Int
     ) {
+        //Drop Phase - players have to place 3 pieces each
+        if (piecesPlaced < totalPieces) {
+            if (board[row][col] == null) {
+                board[row][col] = if (currentPlayer.value.name.value == player1.name.value) player1.pieceImage.value else player2.pieceImage.value
+                piecesPlaced++
 
-
-        val previousRow: Int = 0
-        val previousCol: Int = 0
-        if (board[row][col] == null && isValidMove(row, col)) {
-
-            board[row][col] =
-                if (currentPlayer.value == player1Name.value) R.drawable.player1_image else R.drawable.player2_image
-
-            if(checkWin()){
-                winningPlayer.value = currentPlayer.value
-                Log.d("GameViewModel", "Winner detected: ${winningPlayer.value}")
-            } else if(checkStalemate()) {
-                Log.d("GameViewModel", "Stalemate detected")
-
-            } else {
-                swapPlayers()
+                if (checkWin()) {
+                    winningPlayer.value = currentPlayer.value
+                } else if (checkStalemate()) {
+                    //TODO
+                } else {
+                    swapPlayers()
+                }
             }
+        } else {
+            //Movement Phase - players can move already placed pieces to adjacent empty cells
+            if (selectedPiece == null) {
+                // Select a piece to move
+                if (board[row][col] != null && isCurrentPlayerPiece(row, col)) {
+                    selectedPiece = Pair(row, col)
+                    Log.d("GameViewModel", "Piece selected at: ($row, $col)")
+                }
+            } else {
+                Log.d("GameViewModel", "Entered other Phase")
+                val (selectedRow, selectedCol) = selectedPiece!!
+                if (board[row][col] == null && isValidMove(
+                        selectedRow,
+                        selectedCol,
+                        row,
+                        col
+                    )
+                ) {
+                    board[row][col] = board[selectedRow][selectedCol]
+                    board[selectedRow][selectedCol] = null
+                    selectedPiece = null
 
+                    if (checkWin()) {
+                        winningPlayer.value = currentPlayer.value
+                    } else if (checkStalemate()) {
+                        Log.d("GameViewModel", "Stalemate detected")
+                    } else {
+                        swapPlayers()
+                    }
+                } else {
+                    Log.d("GameViewModel", "Invalid move. Must be an adjacent empty cell.")
+                    selectedPiece = null // Deselect the piece if the move is invalid
+                }
+            }
         }
     }
 
+    private fun isCurrentPlayerPiece(row: Int, col: Int): Boolean {
+        // Check to see if the selected cell has the current players piece
+        val currentPlayerPiece = currentPlayer.value.pieceImage.value
+        return board[row][col] == currentPlayerPiece
+    }
 
-    //Function to make sure its placed in an adjacent cell to the
-    private fun isValidMove(row: Int, col: Int): Boolean {
-//        if(board[row - 1][col - 1] != null) {
-//            return false
-//        }
+    private fun isValidMove(
+        selectedRow: Int,
+        selectedCol: Int,
+        targetRow: Int,
+        targetCol: Int
+    ): Boolean {
+        val adjacentCells = getAdjacentCells(selectedRow, selectedCol)
+        return adjacentCells.contains(Pair(targetRow, targetCol))
+    }
 
-        return true
+    //returns a list of board[row][col] that are adjacent to the cell selected
+    private fun getAdjacentCells(row: Int, col: Int): List<Pair<Int, Int>> {
+        return listOfNotNull(
+            if (row > 0) Pair(
+                row - 1,
+                col
+            ) else null, // else null for incase the adjacent cell is outside the board/doesent exist
+            if (row < 2) Pair(row + 1, col) else null, // Down
+            if (col > 0) Pair(row, col - 1) else null, // Left
+            if (col < 2) Pair(row, col + 1) else null  // Right
+        )
     }
 
     private fun checkWin(): Boolean {
@@ -86,14 +146,15 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
             listOf(2, 4, 6)
         )
 
-        val currentPlayerPiece = if (currentPlayer.value == player1Name.value) R.drawable.player1_image else R.drawable.player2_image
+        val currentPlayerPiece =
+            if (currentPlayer.value == player1) player1.pieceImage else player2.pieceImage
 
         //TODO
         ///ADDITIONAL FEATURE
         ///HIGHLIGHT WINNING SECTION?
 
         for (combination in winningCombinations) {
-            if (combination.all { flatBoard[it] == currentPlayerPiece }) {
+            if (combination.all { flatBoard[it] == currentPlayerPiece.value }) {
                 return true // A winner has been detected
             }
         }
@@ -113,7 +174,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     private fun swapPlayers() {
         currentPlayer.value =
-            if (currentPlayer.value == player1Name.value) player2Name.value else player1Name.value
+            if (currentPlayer.value == player1) player2 else player1
     }
 
     fun resetGame() {
@@ -122,11 +183,12 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
                 board[r][c] = null
             }
         }
+
+        piecesPlaced = 0
         winningPlayer.value = null
         stalemate.value = false
-        currentPlayer.value = player1Name.value
+        currentPlayer.value = player1
     }
-
 
 }
 
