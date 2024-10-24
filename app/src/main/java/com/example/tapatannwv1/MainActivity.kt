@@ -59,8 +59,6 @@ fun TapatanApp(
             }
 
             composable("game") {
-
-                Log.d("MainActivity", "TapatanApp:${gameViewModel.player1.name}").toString()
                 GameScreen(
                     player1Name = gameViewModel.player1.name.value,
                     player2Name = gameViewModel.player2.name.value,
@@ -79,8 +77,10 @@ fun TapatanApp(
                 SettingsScreen(
                     onHelpClicked = { navController.navigate("help") },
                     onBackClicked = { navController.popBackStack() },
-                    onApplyClicked = { player1Name, player2Name ->
+                    onApplyClicked = { player1Name, player2Name, player1Piece, player2Piece ->
                         gameViewModel.setPlayerNames(player1Name, player2Name)
+                        gameViewModel.setPlayerImage(player1Piece, player2Piece)
+
                         navController.navigate("home")
                     }
                 )

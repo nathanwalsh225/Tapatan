@@ -1,5 +1,6 @@
 package com.example.tapatannwv1.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,11 +43,6 @@ fun GameScreen(
     onBackClicked: () -> Unit,
     gameViewModel: GameViewModel = viewModel()
 ) {
-
-    //Check to update the name if its not the default
-    if (gameViewModel.player1.name.value == "Player 1") {
-        gameViewModel.setPlayerNames(player1Name, player2Name)
-    }
     val gameWinner = gameViewModel.winningPlayer.value?.name
 
     Column(
@@ -179,6 +175,9 @@ fun GameScreen(
                                     .size(50.dp)
                                     .background(color = Color.LightGray) //Background for the boxes
                                     .clickable {
+
+                                        Log.d("GameViewModel", "(GameSCreen) Player 1 value : ${gameViewModel.player1.name.value}")
+                                        Log.d("GameViewModel", "(GameSCreen) Player 1 image.value : ${gameViewModel.player1.pieceImage.value}")
                                         gameViewModel.onCellClicked(row, col)
                                     },
                                 contentAlignment = Alignment.Center,
@@ -206,21 +205,21 @@ fun GameScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
-                painter = painterResource(id = R.drawable.blackchecker),
+                painter = painterResource(id = gameViewModel.player1.pieceImage.value),
                 contentDescription = "Tapatan Board",
                 modifier = Modifier
                     .padding(12.dp)
             )
 
             Image(
-                painter = painterResource(id = R.drawable.blackchecker),
+                painter = painterResource(id = gameViewModel.player1.pieceImage.value),
                 contentDescription = "Tapatan Board",
                 modifier = Modifier
                     .padding(12.dp)
             )
 
             Image(
-                painter = painterResource(id = R.drawable.blackchecker),
+                painter = painterResource(id =  gameViewModel.player1.pieceImage.value),
                 contentDescription = "Tapatan Board",
                 modifier = Modifier
                     .padding(12.dp)

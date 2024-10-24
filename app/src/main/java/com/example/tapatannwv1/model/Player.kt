@@ -1,6 +1,5 @@
 package com.example.tapatannwv1.model
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 
 class Player(

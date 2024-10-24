@@ -3,6 +3,7 @@ package com.example.tapatannwv1.model
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.tapatannwv1.R
 
 class SettingsViewModel(
     private val savedStateHandle: SavedStateHandle
@@ -27,6 +28,8 @@ class SettingsViewModel(
 //        boardTheme.value = theme
 //        savedStateHandle["boardTheme"] = theme
 //    }
+
+
 
 
 }

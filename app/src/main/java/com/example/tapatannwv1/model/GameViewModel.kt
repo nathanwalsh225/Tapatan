@@ -11,16 +11,23 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     var board = List(3) { mutableStateListOf<Int?>(null, null, null) }
 
+    val availablePieces = listOf( //TODO gather actual images
+        R.drawable.blackchecker,
+        R.drawable.redchecker,
+        R.drawable.player1_image,
+        R.drawable.player2_image,
+    )
+
     val player1 = Player(
         1,
         savedStateHandle.get<String>("player1Name") ?: "Player 1",
-        R.drawable.blackchecker
+        savedStateHandle.get<Int>("player1Image") ?: availablePieces[0],
     )
 
     val player2 = Player(
         2,
         savedStateHandle.get<String>("player2Name") ?: "Player 2",
-        R.drawable.redchecker
+        savedStateHandle.get<Int>("player2Image") ?: availablePieces[1],
     )
 
     val currentPlayer = mutableStateOf(player1)
@@ -31,6 +38,8 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     private val totalPieces = 6
     private var selectedPiece: Pair<Int, Int>? = null
 
+
+
     fun setPlayerNames(name1: String, name2: String) {
         player1.name.value = name1
         player2.name.value = name2
@@ -40,12 +49,15 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         currentPlayer.value = player1
     }
 
-    fun setPlayerImage(player: Int, image: Int) {
-        if (player == 1) {
-            savedStateHandle["player1Image"] = image
-        } else {
-            savedStateHandle["player2Image"] = image
-        }
+    fun setPlayerImage(image1: Int, image2: Int) {
+        player1.pieceImage.value = availablePieces[image1]
+        player2.pieceImage.value = availablePieces[image2]
+
+        // Ensure state is saved for each change
+        savedStateHandle["player1Image"] = player1.pieceImage.value
+        savedStateHandle["player2Image"] = player2.pieceImage.value
+
+        Log.d("GameViewModel", "(OnSet) Player 1 image.value : ${player1.pieceImage.value}")
     }
 
     fun onCellClicked( //There is some issue possibly here with the logic to swap player names if left default
@@ -55,13 +67,22 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         //Drop Phase - players have to place 3 pieces each
         if (piecesPlaced < totalPieces) {
             if (board[row][col] == null) {
+
+
+                Log.d("GameViewModel", "(SHOULD BE) Player 1 image.value : ${availablePieces[0]}")
+                Log.d("GameViewModel", "Player 1 image.value : ${player1.pieceImage.value}")
+
+
+
+
+
                 board[row][col] = if (currentPlayer.value.name.value == player1.name.value) player1.pieceImage.value else player2.pieceImage.value
                 piecesPlaced++
 
                 if (checkWin()) {
                     winningPlayer.value = currentPlayer.value
                 } else if (checkStalemate()) {
-                    //TODO
+                    //TODO implement something I guess
                 } else {
                     swapPlayers()
                 }
