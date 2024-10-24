@@ -5,14 +5,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Help
@@ -25,7 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,12 +48,17 @@ fun GameScreen(
     onBackClicked: () -> Unit,
     gameViewModel: GameViewModel = viewModel()
 ) {
+
     val gameWinner = gameViewModel.winningPlayer.value?.name
-    Box(
+
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 32.dp, top = 12.dp)
+            .padding(bottom = 24.dp)
     ) {
+        val boxWidth = maxWidth
+        val boxHeight = maxHeight
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -76,8 +87,7 @@ fun GameScreen(
                 Image(
                     painter = painterResource(id = R.drawable.tapatanlogo),
                     contentDescription = "Tapatan Logo",
-                    modifier = Modifier
-                        .size(50.dp)
+                    modifier = Modifier.size(50.dp)
                 )
 
                 IconButton(
@@ -146,36 +156,35 @@ fun GameScreen(
             ) {
                 Image(
                     painter = painterResource(id = gameViewModel.player2.pieceImage.value),
-                    contentDescription = "Tapatan Board",
+                    contentDescription = "Player 2 Piece",
                     modifier = Modifier
+                        .scale(0.8f)
                         .padding(12.dp)
                 )
 
                 Image(
                     painter = painterResource(id = gameViewModel.player2.pieceImage.value),
-                    contentDescription = "Tapatan Board",
+                    contentDescription = "Player 2 Piece",
                     modifier = Modifier
+                        .scale(0.8f)
                         .padding(12.dp)
                 )
 
                 Image(
                     painter = painterResource(id = gameViewModel.player2.pieceImage.value),
-                    contentDescription = "Tapatan Board",
+                    contentDescription = "Player 2 Piece",
                     modifier = Modifier
+                        .scale(0.8f)
                         .padding(12.dp)
                 )
             }
 
-
             Spacer(modifier = Modifier.height(20.dp))
-
-
-
 
             Box(
                 modifier = Modifier
-                    .size(400.dp) // Adjust size of the board
-                    .padding(16.dp)
+                    .size(boxWidth * 0.9f) // Adjust size of the board
+                    .wrapContentHeight()
             ) {
 
                 // Background Image of Tapatan Board
@@ -189,21 +198,19 @@ fun GameScreen(
 
                 // Overlay 3x3 Cells on Top of Board
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     for (row in 0 until 3) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth(), //Border for the boxes too see easier
+                            modifier = Modifier.fillMaxWidth(), //Border for the boxes too see easier
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             for (col in 0 until 3) {
                                 Box(
                                     modifier = Modifier
-                                        .size(50.dp)
+                                        .size(boxWidth * 0.15f)
                                         .background(color = Color.LightGray) //Background for the boxes
                                         .clickable {
                                             gameViewModel.onCellClicked(row, col)
@@ -234,23 +241,26 @@ fun GameScreen(
             ) {
                 Image(
                     painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                    contentDescription = "Tapatan Board",
+                    contentDescription = "Player 1 Piece",
                     modifier = Modifier
                         .padding(12.dp)
+                        .scale(0.8f)
                 )
 
                 Image(
                     painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                    contentDescription = "Tapatan Board",
+                    contentDescription = "Player 1 Piece",
                     modifier = Modifier
                         .padding(12.dp)
+                        .scale(0.8f)
                 )
 
                 Image(
                     painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                    contentDescription = "Tapatan Board",
+                    contentDescription = "Player 1 Piece",
                     modifier = Modifier
                         .padding(12.dp)
+                        .scale(0.8f)
                 )
             }
 
@@ -305,6 +315,7 @@ fun GameScreen(
 
 
     }
+
 }
 
 @Preview
