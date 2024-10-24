@@ -1,7 +1,9 @@
 package com.example.tapatannwv1.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Help
@@ -24,9 +27,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -37,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tapatannwv1.R
 import com.example.tapatannwv1.model.GameViewModel
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun GameScreen(
     player1Name: String,
@@ -45,7 +51,6 @@ fun GameScreen(
     onBackClicked: () -> Unit,
     gameViewModel: GameViewModel = viewModel()
 ) {
-
     val gameWinner = gameViewModel.winningPlayer.value?.name
     val focusManager = LocalFocusManager.current
 
@@ -160,38 +165,34 @@ fun GameScreen(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = painterResource(id = gameViewModel.player2.pieceImage.value),
-                    contentDescription = "Player 2 Piece",
-                    modifier = Modifier
-                        .size(boxWidth * 0.2f)
-                        .padding(12.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = gameViewModel.player2.pieceImage.value),
-                    contentDescription = "Player 2 Piece",
-                    modifier = Modifier
-                        .size(boxWidth * 0.2f)
-                        .padding(12.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = gameViewModel.player2.pieceImage.value),
-                    contentDescription = "Player 2 Piece",
-                    modifier = Modifier
-                        .size(boxWidth * 0.2f)
-                        .padding(12.dp)
-                )
+                for (i in 0..2) {
+                    if (gameViewModel.player1PiecesMovable[i]) {
+                        // Check if player2 still has pieces that can be moved
+                        Image(
+                            painter = painterResource(id = gameViewModel.player1.pieceImage.value),
+                            contentDescription = "Player 1 Piece $i",
+                            modifier = Modifier
+                                .size(boxWidth * 0.2f)
+                                .padding(12.dp)
+                        )
+                    } else {
+                        //outline for the pieces that cannot be moved
+                        Box(
+                            modifier = Modifier
+                                .size(boxWidth * 0.2f)
+                                .padding(12.dp)
+                                .background(Color.Transparent)
+                                .border(2.dp, Color.Gray, shape = CircleShape)
+                        )
+                    }
+                }
             }
-
 
             Box(
                 modifier = Modifier
-                    .size(boxWidth * 0.9f) // Adjust size of the board
+                    .size(boxWidth * 0.9f)
                     .wrapContentHeight()
             ) {
-
                 // Background Image of Tapatan Board
                 Image(
                     painter = painterResource(id = R.drawable.tapatanboard),
@@ -201,7 +202,7 @@ fun GameScreen(
                         .padding(12.dp)
                 )
 
-                // Overlay 3x3 Cells on Top of Board
+                // Overlay 3x3 Cells on Top of Board-
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween,
@@ -215,13 +216,12 @@ fun GameScreen(
                             for (col in 0 until 3) {
                                 Box(
                                     modifier = Modifier
-                                        .size(boxWidth * 0.15f)
+                                        .size(boxWidth * 0.15f).background(Color.Gray)
                                         .clickable {
                                             focusManager.clearFocus()
                                             gameViewModel.onCellClicked(row, col)
                                         },
                                     contentAlignment = Alignment.Center,
-
                                     ) {
                                     val cellValue = gameViewModel.board[row][col]
                                     if (cellValue != null) {
@@ -240,29 +240,27 @@ fun GameScreen(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                    contentDescription = "Player 1 Piece",
-                    modifier = Modifier
-                        .size(boxWidth * 0.2f)
-                        .padding(12.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                    contentDescription = "Player 1 Piece",
-                    modifier = Modifier
-                        .size(boxWidth * 0.2f)
-                        .padding(12.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = gameViewModel.player1.pieceImage.value),
-                    contentDescription = "Player 1 Piece",
-                    modifier = Modifier
-                        .size(boxWidth * 0.2f)
-                        .padding(12.dp)
-                )
+                for (i in 0..2) {
+                    if (gameViewModel.player2PiecesMovable[i]) {
+                        // Check if player1 still has pieces to move
+                        Image(
+                            painter = painterResource(id = gameViewModel.player2.pieceImage.value),
+                            contentDescription = "Player 2 Piece $i",
+                            modifier = Modifier
+                                .size(boxWidth * 0.2f)
+                                .padding(12.dp)
+                        )
+                    } else {
+                        // Show Circle Outline if the piece cannot be moved
+                        Box(
+                            modifier = Modifier
+                                .size(boxWidth * 0.2f)
+                                .padding(12.dp)
+                                .background(Color.Transparent)
+                                .border(2.dp, Color.Gray, shape = CircleShape)
+                        )
+                    }
+                }
             }
 
             Column(modifier = Modifier.padding(16.dp)) {

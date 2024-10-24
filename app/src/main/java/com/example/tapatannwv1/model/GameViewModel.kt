@@ -1,6 +1,7 @@
 package com.example.tapatannwv1.model
 
 import android.util.Log
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -15,6 +16,8 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         R.drawable.blackchecker,
         R.drawable.redchecker,
         R.drawable.whitechecker,
+        R.drawable.yay,
+        R.drawable.xiaomimi
     )
 
     val player1 = Player(
@@ -37,7 +40,11 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     private val totalPieces = 6
     private var selectedPiece: Pair<Int, Int>? = null
 
+    val player1PiecesMovable = mutableStateListOf(true, true, true) //maybe move?
+    val player2PiecesMovable = mutableStateListOf(true, true, true)
 
+    private var player1PieceIndex = 0
+    private var player2PieceIndex = 0
 
     fun setPlayerNames(name1: String, name2: String) {
         player1.name.value = name1
@@ -63,8 +70,9 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         if (piecesPlaced < totalPieces) {
             if (board[row][col] == null) {
 
-
                 board[row][col] = if (currentPlayer.component1().id == player1.id) player1.pieceImage.value else player2.pieceImage.value
+
+                updatePieceMovability()
                 piecesPlaced++
 
                 if (checkWin()) {
@@ -180,10 +188,20 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
             return false
     }
 
+    private fun updatePieceMovability() { //TODO Improve this (remove new variables)
+        if (piecesPlaced % 2 == 0) {
+            player1PiecesMovable[player1PieceIndex] = false
+            player1PieceIndex++
+        } else {
+            player2PiecesMovable[player2PieceIndex] = false
+            player2PieceIndex++
+        }
+    }
 
     private fun swapPlayers() {
         currentPlayer.value = if (currentPlayer.value == player1) player2 else player1
     }
+
 
     fun resetGame() {
         for (r in 0..2) {
@@ -191,11 +209,19 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
                 board[r][c] = null
             }
         }
+        resetStats()
+    }
 
+    private fun resetStats() {
         piecesPlaced = 0
         winningPlayer.value = null
         stalemate.value = false
         currentPlayer.value = player1
+
+        player1PieceIndex = 0
+        player2PieceIndex = 0
+        player1PiecesMovable.forEachIndexed { index, _ -> player1PiecesMovable[index] = true }
+        player2PiecesMovable.forEachIndexed { index, _ -> player2PiecesMovable[index] = true }
     }
 
 }
