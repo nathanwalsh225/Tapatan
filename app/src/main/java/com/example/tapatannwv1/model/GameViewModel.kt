@@ -55,7 +55,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         currentPlayer.value = player1
     }
 
-    fun setPlayerImage(image1: Int, image2: Int) {
+    fun setPlayerImage(image1: Int, image2: Int) { //TODO DO NOT ALLOW THE SAME IMAGE TO BE SELECTED BY BOTH PLAYERS
         player1.pieceImage.value = availablePieces[image1]
         player2.pieceImage.value = availablePieces[image2]
         savedStateHandle["player1Image"] = availablePieces[image1]

@@ -57,7 +57,7 @@ fun SettingsScreen(
 
 
 
-
+    //TODO all user details are reset on entering settings screen, change that
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -164,7 +164,7 @@ fun SettingsScreen(
         }
 
         Column(
-            modifier = Modifier
+            modifier = Modifier.padding(top = 100.dp)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -173,7 +173,6 @@ fun SettingsScreen(
                 text = "Player 1",
                 style = MaterialTheme.typography.headlineLarge,
             )
-
 
             LazyRow(
                 modifier = Modifier
@@ -191,11 +190,24 @@ fun SettingsScreen(
                             }.border(
                                 shape = CircleShape,
                                 width = if (index == player1Piece.value) 4.dp else 0.dp,
-                                color = if (index == player1Piece.value) Color.Green else Color.Transparent
+                                color = if (index == player1Piece.value) Color.Blue else Color.Transparent
                             )
                     )
                 }
             }
+
+            IconButton(onClick = {/*TODO implement image upload*/}) {
+
+                Icon(
+                    Icons.Default.CameraAlt,
+                    contentDescription = "Back",
+                    modifier = Modifier
+                        .size(50.dp),
+                    tint = colorResource(id = R.color.secondaryColor)
+                )
+            }
+
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
