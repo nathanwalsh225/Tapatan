@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation("androidx.compose.material:material-icons-core:1.0.5")
     implementation("androidx.compose.material:material-icons-extended:1.0.5")
+    implementation("io.coil-kt:coil-compose:2.0.0")
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)

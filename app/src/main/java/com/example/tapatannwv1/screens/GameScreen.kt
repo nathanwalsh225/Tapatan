@@ -166,10 +166,10 @@ fun GameScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (i in 0..2) {
-                    if (gameViewModel.player1PiecesMovable[i]) {
+                    if (gameViewModel.player2PiecesMovable[i]) {
                         // Check if player2 still has pieces that can be moved
                         Image(
-                            painter = painterResource(id = gameViewModel.player1.pieceImage.value),
+                            painter = painterResource(id = gameViewModel.player2.pieceImage.value),
                             contentDescription = "Player 1 Piece $i",
                             modifier = Modifier
                                 .size(boxWidth * 0.2f)
@@ -216,7 +216,7 @@ fun GameScreen(
                             for (col in 0 until 3) {
                                 Box(
                                     modifier = Modifier
-                                        .size(boxWidth * 0.15f).background(Color.Gray)
+                                        .size(boxWidth * 0.15f)
                                         .clickable {
                                             focusManager.clearFocus()
                                             gameViewModel.onCellClicked(row, col)
@@ -241,10 +241,10 @@ fun GameScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (i in 0..2) {
-                    if (gameViewModel.player2PiecesMovable[i]) {
+                    if (gameViewModel.player1PiecesMovable[i]) {
                         // Check if player1 still has pieces to move
                         Image(
-                            painter = painterResource(id = gameViewModel.player2.pieceImage.value),
+                            painter = painterResource(id = gameViewModel.player1.pieceImage.value),
                             contentDescription = "Player 2 Piece $i",
                             modifier = Modifier
                                 .size(boxWidth * 0.2f)

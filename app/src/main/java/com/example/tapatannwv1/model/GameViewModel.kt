@@ -1,5 +1,6 @@
 package com.example.tapatannwv1.model
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.runtime.mutableStateListOf
@@ -12,13 +13,24 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     var board = List(3) { mutableStateListOf<Int?>(null, null, null) }
 
-    val availablePieces = listOf( //TODO gather actual images
+    val availablePieces = mutableStateListOf( //TODO gather actual images
         R.drawable.blackchecker,
         R.drawable.redchecker,
         R.drawable.whitechecker,
         R.drawable.yay,
         R.drawable.xiaomimi
     )
+
+    private val customImages = mutableStateListOf<Uri>()
+
+    fun addCustomImage(uri: Uri) { //TODO fix this so that the image shows in the list
+        Log.d("ImageCheck", "${availablePieces.size}")
+        Log.d("ImageCheck", "Image URI: $uri")
+        Log.d("ImageCheck", "Image URI (Hash): ${uri.hashCode()}")
+        customImages.add(uri)
+        availablePieces.add(uri.hashCode())
+        Log.d("ImageCheck", "${availablePieces.size}")
+    }
 
     val player1 = Player(
         1,
@@ -137,15 +149,16 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     }
 
     //returns a list of board[row][col] that are adjacent to the cell selected
-    private fun getAdjacentCells(row: Int, col: Int): List<Pair<Int, Int>> {
+    private fun getAdjacentCells(row: Int, col: Int): List<Pair<Int, Int>> { //todo improve this
         return listOfNotNull(
-            if (row > 0) Pair(
-                row - 1,
-                col
-            ) else null, // else null for incase the adjacent cell is outside the board/doesent exist
+            if (row > 0) Pair(row - 1, col) else null, // Up
             if (row < 2) Pair(row + 1, col) else null, // Down
             if (col > 0) Pair(row, col - 1) else null, // Left
-            if (col < 2) Pair(row, col + 1) else null  // Right
+            if (col < 2) Pair(row, col + 1) else null,  // Right
+            if (row > 0 && col > 0) Pair(row - 1, col - 1) else null, // Top-left diagonal
+            if (row > 0 && col < 2) Pair(row - 1, col + 1) else null, // Top-right diagonal
+            if (row < 2 && col > 0) Pair(row + 1, col - 1) else null, // Bottom-left diagonal
+            if (row < 2 && col < 2) Pair(row + 1, col + 1) else null  // Bottom-right diagonal
         )
     }
 
