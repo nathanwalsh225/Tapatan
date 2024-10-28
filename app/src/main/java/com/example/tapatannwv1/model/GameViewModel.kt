@@ -18,10 +18,12 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         Piece(resourceId = R.drawable.blackchecker),
         Piece(resourceId = R.drawable.redchecker),
         Piece(resourceId = R.drawable.whitechecker),
-        Piece(resourceId = R.drawable.yay),
-        Piece(resourceId = R.drawable.xiaomimi)
+        Piece(resourceId = R.drawable.earth),
+        Piece(resourceId = R.drawable.eurocoin),
+        Piece(resourceId = R.drawable.yay)
     )
 
+    //Initalizing two player objects
     val player1 = Player(
         1,
         savedStateHandle.get<String>("player1Name") ?: "Player 1",
@@ -46,9 +48,11 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     val player1PiecesMovable = mutableStateListOf(true, true, true) //maybe move?
     val player2PiecesMovable = mutableStateListOf(true, true, true)
-    private val moveHistory = mutableListOf<List<Pair<Int, Int>>>()
 
-    fun setPlayerNames(name1: String, name2: String) {
+    private val moveHistory = mutableListOf<List<Pair<Int, Int>>>()
+    var winningCells = mutableStateOf<List<Int>?>(null)
+
+    fun setPlayerNames(name1: String, name2: String) { //setting the player names
         player1.name.value = name1
         player2.name.value = name2
         savedStateHandle["player1Name"] = name1
@@ -57,7 +61,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         currentPlayer.value = player1
     }
 
-    fun setPlayerImage(image1: Int, image2: Int) { //TODO DO NOT ALLOW THE SAME IMAGE TO BE SELECTED BY BOTH PLAYERS
+    fun setPlayerImage(image1: Int, image2: Int) {
         player1.pieceImage.value = availablePieces[image1].resourceId ?: availablePieces[image1].uri.hashCode()
         player2.pieceImage.value = availablePieces[image2].resourceId ?: availablePieces[image2].uri.hashCode()
 
@@ -67,7 +71,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
 
 
-    fun addCustomImage(uri: Uri) { //TODO NOT WORKING
+    fun addCustomImage(uri: Uri) { //TODO (NOT WORKING)
         availablePieces.add(Piece(resourceId = uri.compareTo(uri)))
 
         availablePieces.forEachIndexed { index, piece ->
@@ -93,7 +97,8 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
                 if (checkWin()) {
                     winningPlayer.value = currentPlayer.value
                 } else if (checkStalemate()) {
-                    //TODO implement something I guess
+                    Log.d("GameViewModel", "Stalemate detected")
+                    return
                 } else {
                     swapPlayers()
                 }
@@ -160,10 +165,10 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     //returns a list of board[row][col] that are adjacent to the cell selected
     private fun getAdjacentCells(row: Int, col: Int): List<Pair<Int, Int>> { //todo improve this
         return listOfNotNull(
-            if (row > 0) Pair(row - 1, col) else null, // Up
-            if (row < 2) Pair(row + 1, col) else null, // Down
-            if (col > 0) Pair(row, col - 1) else null, // Left
-            if (col < 2) Pair(row, col + 1) else null,  // Right
+            if (row > 0) Pair(row - 1, col) else null, // above
+            if (row < 2) Pair(row + 1, col) else null, // below
+            if (col > 0) Pair(row, col - 1) else null, // left
+            if (col < 2) Pair(row, col + 1) else null,  // right
             if (row > 0 && col > 0) Pair(row - 1, col - 1) else null, // Top-left diagonal
             if (row > 0 && col < 2) Pair(row - 1, col + 1) else null, // Top-right diagonal
             if (row < 2 && col > 0) Pair(row + 1, col - 1) else null, // Bottom-left diagonal
@@ -188,13 +193,10 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         val currentPlayerPiece =
             if (currentPlayer.value == player1) player1.pieceImage else player2.pieceImage
 
-        //TODO
-        ///ADDITIONAL FEATURE
-        ///HIGHLIGHT WINNING SECTION?
-
         for (combination in winningCombinations) {
             if (combination.all { flatBoard[it] == currentPlayerPiece.value }) {
-                return true // A winner has been detected
+                winningCells.value = combination
+                return true// A winner has been detected
             }
         }
         return false //No winner, game continues
@@ -247,6 +249,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         winningPlayer.value = null
         stalemate.value = false
         currentPlayer.value = player1
+        winningCells.value = null
 
         player1.pieceIndex = 0
         player2.pieceIndex = 0

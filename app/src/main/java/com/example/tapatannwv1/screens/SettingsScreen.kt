@@ -1,7 +1,5 @@
 package com.example.tapatannwv1.screens
 
-import android.content.Intent
-import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,12 +32,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -59,6 +57,7 @@ fun SettingsScreen(
     gameViewModel: GameViewModel = viewModel(),
 ) {
     val focusManager = LocalFocusManager.current
+
     val player1Piece = remember { mutableIntStateOf(0) }
     val player2Piece = remember { mutableIntStateOf(1) }
 
@@ -262,8 +261,8 @@ fun SettingsScreen(
                                 }
                                 .border(
                                     shape = CircleShape,
-                                    width = if (index == player1Piece.value) 4.dp else 0.dp,
-                                    color = if (index == player1Piece.value) Color.Blue else Color.Transparent
+                                    width = if (index == player2Piece.value) 4.dp else 0.dp,
+                                    color = if (index == player2Piece.value) Color.Blue else Color.Transparent
                                 )
                         )
                     }
