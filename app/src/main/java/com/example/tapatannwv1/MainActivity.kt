@@ -15,12 +15,10 @@ import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tapatannwv1.model.GameViewModel
-import com.example.tapatannwv1.model.SettingsViewModel
 import com.example.tapatannwv1.screens.GameScreen
 import com.example.tapatannwv1.screens.HelpScreen
 import com.example.tapatannwv1.screens.HomeScreen
@@ -29,7 +27,6 @@ import com.example.tapatannwv1.ui.theme.TapatanNWv1Theme
 
 class MainActivity : ComponentActivity() {
 
-    private val settingsViewModel: SettingsViewModel by viewModels()
     private val gameViewModel: GameViewModel by viewModels()
 
     //Activity result launcher for choosing an image from gallery
@@ -38,10 +35,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        Log.d("ImageCheck", "Hello")
-        // Initialize the ActivityResultLauncher
+
+        //WIP custom image selection
         pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
+
                 val imageUri = result.data?.data
                 Log.d("ImageCheck", "Image URI: $imageUri")
                 if (imageUri != null) {
@@ -53,7 +51,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            TapatanApp(settingsViewModel, gameViewModel, ::openGallery)
+            TapatanApp(gameViewModel, ::openGallery)
         }
     }
 
@@ -66,7 +64,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TapatanApp(
-    settingsViewModel: SettingsViewModel,
     gameViewModel: GameViewModel,
     onChooseImageClicked: () -> Unit
 ) {

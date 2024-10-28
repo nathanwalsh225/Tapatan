@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -60,8 +61,6 @@ fun SettingsScreen(
     val focusManager = LocalFocusManager.current
     val player1Piece = remember { mutableIntStateOf(0) }
     val player2Piece = remember { mutableIntStateOf(1) }
-
-    val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
     //TODO all user details are reset on entering settings screen, change that
     Box(
@@ -185,20 +184,89 @@ fun SettingsScreen(
                     .padding(horizontal = 16.dp)
             ) {
                 items(gameViewModel.availablePieces.size) { index ->
-                    Image(
-                        painter = rememberAsyncImagePainter(gameViewModel.availablePieces[index]),
-                        contentDescription = "Piece $index",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(8.dp)
-                            .clickable {
-                                player1Piece.value = index
-                            }.border(
-                                shape = CircleShape,
-                                width = if (index == player1Piece.value) 4.dp else 0.dp,
-                                color = if (index == player1Piece.value) Color.Blue else Color.Transparent
-                            )
-                    )
+                    val piece = gameViewModel.availablePieces[index]
+                    if (piece.resourceId != null) {
+                        Image(
+                            painter = painterResource(id = piece.resourceId),
+                            contentDescription = "Piece $index",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(8.dp)
+                                .clickable {
+                                    player1Piece.value = index
+                                }
+                                .border(
+                                    shape = CircleShape,
+                                    width = if (index == player1Piece.value) 4.dp else 0.dp,
+                                    color = if (index == player1Piece.value) Color.Blue else Color.Transparent
+                                )
+                        )
+                    } else if (piece.uri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = piece.uri),
+                            contentDescription = "Piece $index",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(8.dp)
+                                .clickable {
+                                    player1Piece.value = index
+                                }
+                                .border(
+                                    shape = CircleShape,
+                                    width = if (index == player1Piece.value) 4.dp else 0.dp,
+                                    color = if (index == player1Piece.value) Color.Blue else Color.Transparent
+                                )
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Player 2",
+                style = MaterialTheme.typography.headlineLarge,
+            )
+            LazyRow(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+            ) {
+
+
+                items(gameViewModel.availablePieces.size) { index ->
+                    val piece = gameViewModel.availablePieces[index]
+                    if (piece.resourceId != null) {
+                        Image(
+                            painter = painterResource(id = piece.resourceId),
+                            contentDescription = "Piece $index",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(8.dp)
+                                .clickable {
+                                    player2Piece.value = index
+                                }
+                                .border(
+                                    shape = CircleShape,
+                                    width = if (index == player2Piece.value) 4.dp else 0.dp,
+                                    color = if (index == player2Piece.value) Color.Green else Color.Transparent
+                                )
+                        )
+                    } else if (piece.uri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(piece.uri),
+                            contentDescription = "Piece $index",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(8.dp)
+                                .clickable {
+                                    player2Piece.value = index
+                                }
+                                .border(
+                                    shape = CircleShape,
+                                    width = if (index == player1Piece.value) 4.dp else 0.dp,
+                                    color = if (index == player1Piece.value) Color.Blue else Color.Transparent
+                                )
+                        )
+                    }
                 }
             }
 
@@ -211,35 +279,6 @@ fun SettingsScreen(
                         .size(50.dp),
                     tint = colorResource(id = R.color.secondaryColor)
                 )
-            }
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Player 2",
-                style = MaterialTheme.typography.headlineLarge,
-            )
-            LazyRow(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-            ) {
-                items(gameViewModel.availablePieces.size) { index ->
-                    Image(
-                        painter = painterResource(id = gameViewModel.availablePieces[index]),
-                        contentDescription = "Piece $index",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(8.dp)
-                            .clickable {
-                                player2Piece.value = index
-                            }.border(
-                                shape = CircleShape,
-                                width = if (index == player2Piece.value) 4.dp else 0.dp,
-                                color = if (index == player2Piece.value) Color.Green else Color.Transparent
-                            )
-                    )
-                }
             }
         }
 

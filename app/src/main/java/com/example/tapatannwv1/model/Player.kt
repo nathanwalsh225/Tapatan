@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 class Player(
     val id: Int,
     name: String,
-    pieceImage: Int
+    pieceImage: Int,
+    var pieceIndex: Int
 ) {
     var name = mutableStateOf(name)
     var pieceImage = mutableStateOf(pieceImage)

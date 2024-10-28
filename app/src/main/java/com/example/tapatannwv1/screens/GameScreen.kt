@@ -61,10 +61,18 @@ fun GameScreen(
     ) {
         val boxWidth = maxWidth
         val boxHeight = maxHeight
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
+
+        val boardSize = if (screenWidth < screenHeight) {
+            screenWidth * 0.8f // For portrait
+        } else {
+            screenHeight * 0.8f // For landscape
+        }
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .size(boardSize)
                 .padding(top = 32.dp),
             verticalArrangement = Arrangement.Top
         ) {

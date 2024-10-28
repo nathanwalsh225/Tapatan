@@ -2,7 +2,6 @@ package com.example.tapatannwv1.model
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -12,36 +11,29 @@ import com.example.tapatannwv1.R
 class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
 
     var board = List(3) { mutableStateListOf<Int?>(null, null, null) }
+    private val player1ImageIndex = savedStateHandle.get<Int>("player1ImageIndex") ?: 0
+    private val player2ImageIndex = savedStateHandle.get<Int>("player2ImageIndex") ?: 1
 
-    val availablePieces = mutableStateListOf( //TODO gather actual images
-        R.drawable.blackchecker,
-        R.drawable.redchecker,
-        R.drawable.whitechecker,
-        R.drawable.yay,
-        R.drawable.xiaomimi
+    val availablePieces = mutableStateListOf(
+        Piece(resourceId = R.drawable.blackchecker),
+        Piece(resourceId = R.drawable.redchecker),
+        Piece(resourceId = R.drawable.whitechecker),
+        Piece(resourceId = R.drawable.yay),
+        Piece(resourceId = R.drawable.xiaomimi)
     )
-
-    private val customImages = mutableStateListOf<Uri>()
-
-    fun addCustomImage(uri: Uri) { //TODO fix this so that the image shows in the list
-        Log.d("ImageCheck", "${availablePieces.size}")
-        Log.d("ImageCheck", "Image URI: $uri")
-        Log.d("ImageCheck", "Image URI (Hash): ${uri.hashCode()}")
-        customImages.add(uri)
-        availablePieces.add(uri.hashCode())
-        Log.d("ImageCheck", "${availablePieces.size}")
-    }
 
     val player1 = Player(
         1,
         savedStateHandle.get<String>("player1Name") ?: "Player 1",
-        savedStateHandle.get<Int>("player1Image") ?: R.drawable.blackchecker,
+        availablePieces[player1ImageIndex].resourceId ?: availablePieces[player1ImageIndex].uri.hashCode(),
+        0
     )
 
     val player2 = Player(
         2,
         savedStateHandle.get<String>("player2Name") ?: "Player 2",
-        savedStateHandle.get<Int>("player2Image") ?: R.drawable.redchecker,
+        availablePieces[player2ImageIndex].resourceId ?: availablePieces[player2ImageIndex].uri.hashCode(),
+        0
     )
 
     val currentPlayer = mutableStateOf(player1)
@@ -54,9 +46,7 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
 
     val player1PiecesMovable = mutableStateListOf(true, true, true) //maybe move?
     val player2PiecesMovable = mutableStateListOf(true, true, true)
-
-    private var player1PieceIndex = 0
-    private var player2PieceIndex = 0
+    private val moveHistory = mutableListOf<List<Pair<Int, Int>>>()
 
     fun setPlayerNames(name1: String, name2: String) {
         player1.name.value = name1
@@ -68,10 +58,24 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     }
 
     fun setPlayerImage(image1: Int, image2: Int) { //TODO DO NOT ALLOW THE SAME IMAGE TO BE SELECTED BY BOTH PLAYERS
-        player1.pieceImage.value = availablePieces[image1]
-        player2.pieceImage.value = availablePieces[image2]
-        savedStateHandle["player1Image"] = availablePieces[image1]
-        savedStateHandle["player2Image"] = availablePieces[image2]
+        player1.pieceImage.value = availablePieces[image1].resourceId ?: availablePieces[image1].uri.hashCode()
+        player2.pieceImage.value = availablePieces[image2].resourceId ?: availablePieces[image2].uri.hashCode()
+
+        savedStateHandle["player1ImageIndex"] = image1
+        savedStateHandle["player2ImageIndex"] = image2
+    }
+
+
+
+    fun addCustomImage(uri: Uri) { //TODO NOT WORKING
+        availablePieces.add(Piece(resourceId = uri.compareTo(uri)))
+
+        availablePieces.forEachIndexed { index, piece ->
+            Log.d("AvailablePieces", "Piece at $index: ${piece.resourceId}")
+            Log.d("AvailablePieces", ":) Piece at $index: ${piece.uri.hashCode() ?: piece.resourceId}")
+        }
+
+        Log.d("ImageCheck", "${availablePieces.size}")
     }
 
     fun onCellClicked( //There is some issue possibly here with the logic to swap player names if left default
@@ -81,7 +85,6 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         //Drop Phase - players have to place 3 pieces each
         if (piecesPlaced < totalPieces) {
             if (board[row][col] == null) {
-
                 board[row][col] = if (currentPlayer.component1().id == player1.id) player1.pieceImage.value else player2.pieceImage.value
 
                 updatePieceMovability()
@@ -113,14 +116,20 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
                         col
                     )
                 ) {
+                    val currentMove = listOf(Pair(selectedRow, selectedCol), Pair(row, col))
+                    moveHistory.add(currentMove)
+
                     board[row][col] = board[selectedRow][selectedCol]
                     board[selectedRow][selectedCol] = null
                     selectedPiece = null
 
                     if (checkWin()) {
                         winningPlayer.value = currentPlayer.value
+                        return
                     } else if (checkStalemate()) {
+
                         Log.d("GameViewModel", "Stalemate detected")
+                        return
                     } else {
                         swapPlayers()
                     }
@@ -192,22 +201,30 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
     }
 
     private fun checkStalemate(): Boolean {
-        val flatBoard = board.flatten() //flatting the board to check it easier same way as above
-
-        if (flatBoard.all { it != null }) {
+        if (moveHistory.size < 6) {
+            return false // Not enough moves to check for repetition
+        }
+        //Getting the last three moves
+        val lastThreeMoves = moveHistory.takeLast(3)
+        Log.d("LastThreeMoves", "$lastThreeMoves")
+        // Check if the last three moves are the same as the previous three moves
+        val previousThreeMoves = moveHistory.dropLast(3).takeLast(3)
+        if (lastThreeMoves == previousThreeMoves) {
+            Log.d("LastThreeMoves", "true")
             stalemate.value = true
             return true
-        } else
-            return false
+        }
+
+        return false
     }
 
-    private fun updatePieceMovability() { //TODO Improve this (remove new variables)
+    private fun updatePieceMovability() {
         if (piecesPlaced % 2 == 0) {
-            player1PiecesMovable[player1PieceIndex] = false
-            player1PieceIndex++
+            player1PiecesMovable[player1.pieceIndex] = false
+            player1.pieceIndex++
         } else {
-            player2PiecesMovable[player2PieceIndex] = false
-            player2PieceIndex++
+            player2PiecesMovable[player2.pieceIndex] = false
+            player2.pieceIndex++
         }
     }
 
@@ -231,12 +248,15 @@ class GameViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel(
         stalemate.value = false
         currentPlayer.value = player1
 
-        player1PieceIndex = 0
-        player2PieceIndex = 0
+        player1.pieceIndex = 0
+        player2.pieceIndex = 0
         player1PiecesMovable.forEachIndexed { index, _ -> player1PiecesMovable[index] = true }
         player2PiecesMovable.forEachIndexed { index, _ -> player2PiecesMovable[index] = true }
     }
 
 }
+
+
+
 
 
